@@ -1,0 +1,50 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    strategy:
+      matrix:
+        go: ['1.22.x', '1.23.x']
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: ${{ matrix.go }}
+          cache: true
+      - run: go test ./...
+      - run: go vet ./...
+      - run: test -z "$(gofmt -l cmd internal whoop)"
+
+  build:
+    strategy:
+      matrix:
+        include:
+          - goos: linux
+            goarch: amd64
+          - goos: darwin
+            goarch: arm64
+          - goos: windows
+            goarch: amd64
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+      - run: mkdir -p dist
+      - run: GOOS=${{ matrix.goos }} GOARCH=${{ matrix.goarch }} go build -trimpath -ldflags='-s -w' -o dist/whoop-${{ matrix.goos }}-${{ matrix.goarch }} ./cmd/whoop
+      - uses: actions/upload-artifact@v4
+        with:
+          name: whoop-${{ matrix.goos }}-${{ matrix.goarch }}
+          path: dist/whoop-${{ matrix.goos }}-${{ matrix.goarch }}
