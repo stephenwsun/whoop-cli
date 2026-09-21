@@ -12,7 +12,7 @@ import (
 )
 
 func TestRefreshRotatesStoredTokenFromFixture(t *testing.T) {
-	tokenFixture, err := os.ReadFile("../testdata/token.json")
+	tokenFixture, err := os.ReadFile("../../whoop/testdata/token.json")
 	if err != nil {
 		t.Fatal(err)
 	}

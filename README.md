@@ -30,6 +30,13 @@ whoop weekly --json
 
 `--json` emits stable JSON data on stdout. `--plain` emits deterministic tab-separated `key=value` records. Human summaries and resource records are emitted on stdout; progress and errors are emitted on stderr. List commands follow every `next_token` page and reject a repeated token instead of looping forever. `--limit`, `--start`, and `--end` are passed to the API.
 
+Detailed operational guides:
+
+- [Quickstart](docs/quickstart.md)
+- [Authentication and credential storage](docs/auth.md)
+- [Automation contract](docs/automation.md)
+- [Command index](docs/commands/README.md)
+
 ## API limitations
 
 The public API exposes account data and scored activities, not direct device control. This project intentionally has no write commands. Availability, score state, timestamp precision, and sport naming follow the official API. A missing or pending score is represented as a null score; it is not synthesized. Pagination and rate limits are handled by the client, but callers must still respect WHOOP quotas.
@@ -51,7 +58,7 @@ The adherence compatibility rule counts only `weightlifting` as `lift` and `muay
 ## Development
 
 ```sh
-go test ./whoop/... ./cmd/whoop
+go test ./...
 ```
 
-The package under `whoop/` is reusable by Go programs. `cmd/whoop` contains only CLI wiring and output policy.
+The package under `whoop/` is the reusable client and model API. CLI-only authentication, output, summary, and runtime wiring live under `internal/`; `cmd/whoop` contains only process entrypoint wiring.
