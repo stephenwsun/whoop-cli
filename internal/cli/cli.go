@@ -255,11 +255,11 @@ func runBrief(ctx context.Context, opts options) error {
 	if err != nil {
 		return err
 	}
-	rec, err := api.Recovery(ctx, whoop.ListOptions{Limit: 1})
+	recPage, err := api.RecoveryPage(ctx, whoop.ListOptions{Limit: 1})
 	if err != nil {
 		return err
 	}
-	sleeps, err := api.Sleep(ctx, whoop.ListOptions{Limit: 1})
+	sleepPage, err := api.SleepPage(ctx, whoop.ListOptions{Limit: 1})
 	if err != nil {
 		return err
 	}
@@ -267,7 +267,7 @@ func runBrief(ctx context.Context, opts options) error {
 	if err != nil {
 		return err
 	}
-	return emitLines(opts, summary.Brief(rec, sleeps, workouts))
+	return emitLines(opts, summary.Brief(recPage.Records, sleepPage.Records, workouts))
 }
 func runWeek(ctx context.Context, opts options) error {
 	api, err := newAPI(ctx)

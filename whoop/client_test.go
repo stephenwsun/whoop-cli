@@ -98,3 +98,27 @@ func TestPaginationRejectsRepeatedToken(t *testing.T) {
 		t.Fatalf("expected pagination error, got %v", err)
 	}
 }
+
+func TestWorkoutsPageDoesNotFetchNextPage(t *testing.T) {
+	requests := 0
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		requests++
+		if got := r.URL.Query().Get("next_token"); got != "cursor-1" {
+			t.Errorf("next_token = %q, want cursor-1", got)
+		}
+		_, _ = w.Write(fixture(t, "workouts-page1.json"))
+	}))
+	defer server.Close()
+
+	client, err := NewClient(ClientConfig{BaseURL: server.URL, MaxRetries: 0})
+	if err != nil {
+		t.Fatal(err)
+	}
+	page, err := client.WorkoutsPage(context.Background(), ListOptions{Limit: 1, NextToken: "cursor-1"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if requests != 1 || len(page.Records) != 1 || page.NextToken != "page-2" {
+		t.Fatalf("unexpected page result: requests=%d page=%#v", requests, page)
+	}
+}
