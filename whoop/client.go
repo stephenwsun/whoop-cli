@@ -85,9 +85,10 @@ func NewClient(cfg ClientConfig) (*Client, error) {
 }
 
 type ListOptions struct {
-	Limit int
-	Start string
-	End   string
+	Limit     int
+	Start     string
+	End       string
+	NextToken string
 }
 
 func (o ListOptions) values(next string) url.Values {
@@ -119,7 +120,7 @@ func (e *PaginationError) Error() string { return "WHOOP returned a repeated pag
 func listAll[T any](ctx context.Context, c *Client, path string, opts ListOptions) ([]T, error) {
 	var all []T
 	seen := map[string]struct{}{}
-	next := ""
+	next := opts.NextToken
 	for {
 		var page Page[T]
 		if err := c.get(ctx, path, opts.values(next), &page); err != nil {
@@ -135,6 +136,32 @@ func listAll[T any](ctx context.Context, c *Client, path string, opts ListOption
 		seen[page.NextToken] = struct{}{}
 		next = page.NextToken
 	}
+}
+
+func page[T any](ctx context.Context, c *Client, path string, opts ListOptions) (Page[T], error) {
+	var result Page[T]
+	err := c.get(ctx, path, opts.values(opts.NextToken), &result)
+	return result, err
+}
+
+func (c *Client) BodyMeasurementsPage(ctx context.Context, opts ListOptions) (Page[BodyMeasurement], error) {
+	return page[BodyMeasurement](ctx, c, "/v2/user/measurement/body", opts)
+}
+
+func (c *Client) CyclesPage(ctx context.Context, opts ListOptions) (Page[Cycle], error) {
+	return page[Cycle](ctx, c, "/v2/cycle", opts)
+}
+
+func (c *Client) RecoveryPage(ctx context.Context, opts ListOptions) (Page[Recovery], error) {
+	return page[Recovery](ctx, c, "/v2/recovery", opts)
+}
+
+func (c *Client) SleepPage(ctx context.Context, opts ListOptions) (Page[Sleep], error) {
+	return page[Sleep](ctx, c, "/v2/activity/sleep", opts)
+}
+
+func (c *Client) WorkoutsPage(ctx context.Context, opts ListOptions) (Page[Workout], error) {
+	return page[Workout](ctx, c, "/v2/activity/workout", opts)
 }
 
 func (c *Client) Profile(ctx context.Context) (Profile, error) {
