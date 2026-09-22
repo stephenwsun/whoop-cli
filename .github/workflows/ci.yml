@@ -40,7 +40,7 @@ jobs:
           go-version-file: go.mod
           cache: true
       - run: go test ./...
-      - run: go build ./cmd/whoop
+      - run: go build -o bin/ ./cmd/whoop
 
   windows:
     runs-on: windows-latest
@@ -51,7 +51,7 @@ jobs:
           go-version-file: go.mod
           cache: true
       - run: go test ./...
-      - run: go build ./cmd/whoop
+      - run: go build -o bin/ ./cmd/whoop
 
   build:
     strategy:
