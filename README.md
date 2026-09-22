@@ -34,7 +34,9 @@ Detailed operational guides:
 
 - [Quickstart](docs/quickstart.md)
 - [Authentication and credential storage](docs/auth.md)
+- [Credential migration](docs/migration.md)
 - [Automation contract](docs/automation.md)
+- [Troubleshooting](docs/troubleshooting.md)
 - [Command index](docs/commands/README.md)
 
 ## API limitations

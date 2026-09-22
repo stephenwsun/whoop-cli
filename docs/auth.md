@@ -12,6 +12,8 @@ WHOOP rotates refresh tokens. Every refresh persists the replacement before an A
 
 Run `whoop config diagnose --json` to inspect presence only. Values and tokens are never printed.
 
+See [Troubleshooting](troubleshooting.md) for callback, token-rotation, and rate-limit recovery. See [Credential migration](migration.md) for moving from Athena's `athena-whoop` Keychain entries without exposing secrets.
+
 ## Least privilege
 
 Use only: `read:profile`, `read:body_measurement`, `read:cycles`, `read:recovery`, `read:sleep`, `read:workout`, and `offline`. The public WHOOP API used by this project exposes account data; it does not expose direct device control. This CLI therefore has no write commands.
