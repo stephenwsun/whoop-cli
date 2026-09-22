@@ -1,0 +1,44 @@
+version: 2
+
+project_name: whoop-cli
+
+before:
+  hooks:
+    - go mod download
+
+builds:
+  - id: whoop
+    main: ./cmd/whoop
+    binary: whoop
+    flags:
+      - -trimpath
+    ldflags:
+      - -s -w
+      - -X github.com/stephensun/whoop-cli/internal/version.Version={{ .Tag }}
+      - -X github.com/stephensun/whoop-cli/internal/version.Commit={{ .ShortCommit }}
+      - -X github.com/stephensun/whoop-cli/internal/version.Date={{ .CommitDate }}
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+
+archives:
+  - formats: [tar.gz]
+    name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    format_overrides:
+      - goos: windows
+        formats: [zip]
+
+checksum:
+  name_template: checksums.txt
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - '^Merge pull request'

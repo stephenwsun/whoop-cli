@@ -78,3 +78,22 @@ func TestFileStoreMissingAndJSONShape(t *testing.T) {
 		t.Fatalf("unexpected credential JSON: %s", data)
 	}
 }
+
+func TestFileStoreRejectsMalformedDataWithoutOverwriting(t *testing.T) {
+	path := t.TempDir() + "/credentials.json"
+	if err := os.WriteFile(path, []byte(`{"refresh_token":`), 0600); err != nil {
+		t.Fatal(err)
+	}
+	store := FileStore{Path: path}
+	err := store.Set(context.Background(), "client_id", "new-client")
+	if err == nil || !strings.Contains(err.Error(), "decode credential file") {
+		t.Fatalf("expected malformed credential error, got %v", err)
+	}
+	data, readErr := os.ReadFile(path)
+	if readErr != nil {
+		t.Fatal(readErr)
+	}
+	if string(data) != `{"refresh_token":` {
+		t.Fatalf("malformed credential file was overwritten: %q", data)
+	}
+}

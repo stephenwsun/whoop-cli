@@ -142,16 +142,22 @@ func (o *OAuth) Authenticate(ctx context.Context) error {
 	}
 	defer listener.Close()
 	result := make(chan callbackResult, 1)
-	server := &http.Server{Handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if r.URL.Path != redirect.Path {
-			http.NotFound(w, r)
-			return
-		}
-		q := r.URL.Query()
-		result <- callbackResult{code: q.Get("code"), state: q.Get("state"), oauthError: q.Get("error")}
-		w.Header().Set("Content-Type", "text/html; charset=utf-8")
-		_, _ = io.WriteString(w, "<h2>WHOOP is connected. You can close this tab.</h2>")
-	})}
+	server := &http.Server{
+		ReadHeaderTimeout: 5 * time.Second,
+		Handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			if r.URL.Path != redirect.Path {
+				http.NotFound(w, r)
+				return
+			}
+			q := r.URL.Query()
+			select {
+			case result <- callbackResult{code: q.Get("code"), state: q.Get("state"), oauthError: q.Get("error")}:
+			default:
+			}
+			w.Header().Set("Content-Type", "text/html; charset=utf-8")
+			_, _ = io.WriteString(w, "<h2>WHOOP is connected. You can close this tab.</h2>")
+		}),
+	}
 	go func() { _ = server.Serve(listener) }()
 	if err := o.cfg.OpenBrowser(u); err != nil {
 		_ = server.Shutdown(context.Background())

@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/stephensun/whoop-cli/internal/auth"
+	"github.com/stephensun/whoop-cli/internal/version"
 	"github.com/stephensun/whoop-cli/whoop"
 )
 
@@ -49,7 +50,11 @@ func Load(ctx context.Context) (Config, error) {
 }
 
 func (c Config) OAuth() (*auth.OAuth, error) {
-	return auth.New(auth.Config{ClientID: c.ClientID, ClientSecret: c.ClientSecret, Store: c.Store})
+	return c.OAuthWithBrowser(nil)
+}
+
+func (c Config) OAuthWithBrowser(openBrowser func(string) error) (*auth.OAuth, error) {
+	return auth.New(auth.Config{ClientID: c.ClientID, ClientSecret: c.ClientSecret, Store: c.Store, OpenBrowser: openBrowser})
 }
 
 func (c Config) API(ctx context.Context) (*whoop.Client, error) {
@@ -61,7 +66,7 @@ func (c Config) API(ctx context.Context) (*whoop.Client, error) {
 	if err != nil {
 		return nil, err
 	}
-	return whoop.NewClient(whoop.ClientConfig{HTTPClient: &http.Client{}, AccessToken: token.AccessToken, MaxRetries: 3})
+	return whoop.NewClient(whoop.ClientConfig{HTTPClient: &http.Client{}, AccessToken: token.AccessToken, MaxRetries: 3, UserAgent: version.UserAgent()})
 }
 
 func Diagnose(ctx context.Context) Diagnostics {

@@ -9,9 +9,11 @@ import (
 	"strings"
 	"time"
 
+	"github.com/stephensun/whoop-cli/internal/auth"
 	"github.com/stephensun/whoop-cli/internal/output"
 	"github.com/stephensun/whoop-cli/internal/runtime"
 	"github.com/stephensun/whoop-cli/internal/summary"
+	"github.com/stephensun/whoop-cli/internal/version"
 	"github.com/stephensun/whoop-cli/whoop"
 )
 
@@ -20,6 +22,7 @@ type options struct {
 	limit         int
 	start, end    string
 	noInput       bool
+	noBrowser     bool
 	safetyProfile string
 	allowCommands []string
 }
@@ -44,6 +47,9 @@ func validatePolicy(command, configSubcommand string, opts options) error {
 	if opts.safetyProfile != "readonly" {
 		return fmt.Errorf("unsupported safety profile %q; only readonly is available", opts.safetyProfile)
 	}
+	if opts.noBrowser && command != "auth" {
+		return errors.New("--no-browser is only valid with auth")
+	}
 	policyCommand := command
 	if configSubcommand != "" {
 		policyCommand += " " + configSubcommand
@@ -59,6 +65,10 @@ func validatePolicy(command, configSubcommand string, opts options) error {
 func Run(ctx context.Context, args []string) {
 	if len(args) > 0 && (args[0] == "--help" || args[0] == "-h" || args[0] == "help") {
 		usage()
+		return
+	}
+	if len(args) > 0 && (args[0] == "--version" || args[0] == "-version") {
+		fmt.Fprintln(os.Stdout, version.Current().String())
 		return
 	}
 	command := "brief"
@@ -89,6 +99,7 @@ func Run(ctx context.Context, args []string) {
 	start := fs.String("start", "", "inclusive RFC3339 start")
 	end := fs.String("end", "", "exclusive RFC3339 end")
 	noInput := fs.Bool("no-input", false, "never open a browser or prompt for input")
+	noBrowser := fs.Bool("no-browser", false, "print the authorization URL instead of opening a browser")
 	safetyProfile := fs.String("safety-profile", "readonly", "automation policy (readonly only)")
 	var allowCommands stringList
 	fs.Var(&allowCommands, "allow-command", "allow only this exact command (repeatable)")
@@ -105,18 +116,20 @@ func Run(ctx context.Context, args []string) {
 	if *plainFlag {
 		mode = output.Plain
 	}
-	opts := options{mode: mode, limit: *limit, start: *start, end: *end, noInput: *noInput, safetyProfile: *safetyProfile, allowCommands: allowCommands}
+	opts := options{mode: mode, limit: *limit, start: *start, end: *end, noInput: *noInput, noBrowser: *noBrowser, safetyProfile: *safetyProfile, allowCommands: allowCommands}
 	if err := validatePolicy(command, configSubcommand, opts); err != nil {
 		fail(2, err)
 	}
 	var err error
 	switch command {
-	case "schema":
-		err = runSchema(opts)
 	case "auth":
-		err = runAuth(ctx)
+		err = runAuth(ctx, opts)
 	case "config":
 		err = runConfig(ctx, []string{configSubcommand}, opts)
+	case "version":
+		err = runVersion(opts)
+	case "schema":
+		err = runSchema(opts)
 	case "profile":
 		err = runProfile(ctx, opts)
 	case "body", "body-measurements", "measurements":
@@ -149,10 +162,11 @@ func usage() {
 
 Usage: whoop <command> [--json|--plain] [--limit N] [--start RFC3339] [--end RFC3339]
 
-	Commands: auth, config diagnose, schema, profile, body, cycles, recovery, sleep, workouts, brief, week, weekly
+	Commands: auth, config diagnose, version, schema, profile, body, cycles, recovery, sleep, workouts, brief, week, weekly
 
-Configuration: WHOOP_CLIENT_ID and WHOOP_CLIENT_SECRET may be environment variables;
-otherwise they are read from the secure credential store under client_id/client_secret.`)
+	--version prints build metadata without contacting WHOOP.
+	Configuration: WHOOP_CLIENT_ID and WHOOP_CLIENT_SECRET may be environment variables;
+	otherwise they are read from the secure credential store under client_id/client_secret.`)
 }
 func fail(code int, err error) { output.Error(os.Stderr, err); os.Exit(code) }
 
@@ -164,21 +178,45 @@ func newAPI(ctx context.Context) (*whoop.Client, error) {
 	return config.API(ctx)
 }
 
-func runAuth(ctx context.Context) error {
+func runAuth(ctx context.Context, opts options) error {
 	config, err := runtime.Load(ctx)
 	if err != nil {
 		return err
 	}
-	client, err := config.OAuth()
+	var client *auth.OAuth
+	if opts.noBrowser {
+		client, err = config.OAuthWithBrowser(func(rawURL string) error {
+			fmt.Fprintf(os.Stderr, "whoop: open this URL in a browser to authorize:\n%s\n", rawURL)
+			return nil
+		})
+	} else {
+		client, err = config.OAuth()
+	}
 	if err != nil {
 		return err
 	}
-	fmt.Fprintln(os.Stderr, "whoop: opening browser for WHOOP consent; approve access there...")
+	if opts.noBrowser {
+		fmt.Fprintln(os.Stderr, "whoop: waiting for the localhost callback...")
+	} else {
+		fmt.Fprintln(os.Stderr, "whoop: opening browser for WHOOP consent; approve access there...")
+	}
 	if err := client.Authenticate(ctx); err != nil {
 		return err
 	}
 	fmt.Fprintln(os.Stderr, "whoop: authorized; refresh token stored securely")
 	return nil
+}
+func runVersion(opts options) error {
+	info := version.Current()
+	switch opts.mode {
+	case output.JSON:
+		return output.JSONValue(os.Stdout, info)
+	case output.Plain:
+		return output.PlainValue(os.Stdout, info)
+	default:
+		_, err := fmt.Fprintln(os.Stdout, info.String())
+		return err
+	}
 }
 
 func runConfig(ctx context.Context, args []string, opts options) error {
@@ -231,7 +269,14 @@ func runList(ctx context.Context, name string, opts options) error {
 	if err != nil {
 		return err
 	}
-	return emit(opts, value, name)
+	switch opts.mode {
+	case output.JSON:
+		return output.JSONValue(os.Stdout, value)
+	case output.Plain:
+		return output.PlainValue(os.Stdout, value)
+	default:
+		return output.PlainValue(os.Stdout, value)
+	}
 }
 func emit(opts options, value any, name string) error {
 	switch opts.mode {
