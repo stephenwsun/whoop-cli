@@ -18,3 +18,5 @@ The executable is `whoop`. Every resource command is read-only.
 | `weekly` | Seven-day recovery, HRV/RHR, sleep, and adherence rollup |
 
 Resource list commands accept `--limit`, `--start`, `--end`, `--json`, and `--plain`. Pagination follows every WHOOP `next_token` and rejects repeated tokens.
+
+For credential and API failures, see [Troubleshooting](../troubleshooting.md) and [Credential migration](../migration.md).
