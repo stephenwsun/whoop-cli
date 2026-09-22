@@ -15,6 +15,29 @@ The reusable API client is under `whoop/`; CLI-only wiring belongs under
 `whoop schema --json` and the automation documentation when changing commands,
 flags, output, or exit codes.
 
+## Branch and commit naming
+
+Use a short-lived feature branch named
+`<type>/<short-kebab-description>`, for example:
+
+- `feat/cycle-detail-lookups`
+- `fix/oauth-callback-timeout`
+- `docs/release-runbook`
+- `test/credential-store`
+- `ci/update-actions`
+
+Use Conventional Commits for authored commits:
+`<type>(<scope>): <imperative summary>`. Keep the subject specific, lowercase,
+and under 72 characters; omit the final period. Use a body for context and a
+`BREAKING CHANGE:` footer when the public CLI, schema, output, credentials, or
+API contract changes.
+
+Supported types are `feat`, `fix`, `docs`, `test`, `ci`, `build`, `chore`,
+`refactor`, `perf`, and `revert`. Dependabot-generated branch and commit names
+are managed by GitHub and are exempt from this convention. GitHub-generated
+merge commits are also exempt; the commits selected for a squash merge should
+follow the convention.
+
 ## Live WHOOP testing
 
 Live tests are opt-in and must never run with credentials in ordinary CI:
