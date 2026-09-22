@@ -98,7 +98,9 @@ func (s FileStore) Set(ctx context.Context, key, value string) error {
 	}
 	values := map[string]string{}
 	if data, err := os.ReadFile(path); err == nil {
-		_ = json.Unmarshal(data, &values)
+		if err := json.Unmarshal(data, &values); err != nil {
+			return fmt.Errorf("decode credential file: %w", err)
+		}
 	} else if !errors.Is(err, os.ErrNotExist) {
 		return fmt.Errorf("read credential file: %w", err)
 	}

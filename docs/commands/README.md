@@ -6,6 +6,7 @@ The executable is `whoop`. Every resource command is read-only.
 | --- | --- |
 | `auth` | OAuth authorization and refresh-token setup |
 | `config diagnose` | Report credential presence without secrets |
+| `version` | Build version, commit, and date |
 | `schema --json` | Emit the machine-readable command contract |
 | `profile` | Basic WHOOP profile |
 | `body` | Body measurements |
@@ -17,6 +18,6 @@ The executable is `whoop`. Every resource command is read-only.
 | `week` | Seven-day workout list plus adherence |
 | `weekly` | Seven-day recovery, HRV/RHR, sleep, and adherence rollup |
 
-Resource list commands accept `--limit`, `--start`, `--end`, `--json`, and `--plain`. Pagination follows every WHOOP `next_token` and rejects repeated tokens.
+Resource list commands accept `--limit`, `--start`, `--end`, `--json`, and `--plain`. Pagination follows every WHOOP `next_token` response field and rejects repeated tokens. `auth --no-browser` prints the authorization URL and waits for the localhost callback.
 
 For credential and API failures, see [Troubleshooting](../troubleshooting.md) and [Credential migration](../migration.md).

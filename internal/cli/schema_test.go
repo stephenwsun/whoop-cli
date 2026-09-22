@@ -25,8 +25,11 @@ func TestValidatePolicyEnforcesReadOnlyAutomation(t *testing.T) {
 	if err := validatePolicy("auth", "", options{safetyProfile: "readonly", noInput: true}); err == nil {
 		t.Fatal("expected no-input auth rejection")
 	}
-	if err := validatePolicy("profile", "", options{safetyProfile: "readonly", allowCommands: []string{"recovery"}}); err == nil {
-		t.Fatal("expected allowlist rejection")
+	if err := validatePolicy("profile", "", options{safetyProfile: "readonly", noBrowser: true}); err == nil {
+		t.Fatal("expected no-browser command rejection")
+	}
+	if err := validatePolicy("auth", "", options{safetyProfile: "readonly", noBrowser: true}); err != nil {
+		t.Fatalf("expected no-browser auth acceptance: %v", err)
 	}
 	if err := validatePolicy("profile", "", options{safetyProfile: "write"}); err == nil {
 		t.Fatal("expected unsupported profile rejection")

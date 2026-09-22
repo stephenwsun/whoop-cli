@@ -3,7 +3,7 @@ package cli
 import (
 	"os"
 
-	"github.com/stephensun/whoop-cli/internal/output"
+	"github.com/stephenwsun/whoop-cli/internal/output"
 )
 
 type schemaDocument struct {
@@ -51,12 +51,14 @@ func commandSchema() schemaDocument {
 			{Name: "start", Type: "string", Description: "inclusive RFC3339 start"},
 			{Name: "end", Type: "string", Description: "exclusive RFC3339 end"},
 			{Name: "no-input", Type: "bool", Description: "never open a browser or prompt for input"},
+			{Name: "no-browser", Type: "bool", Description: "print the authorization URL instead of opening a browser"},
 			{Name: "safety-profile", Type: "string", Default: "readonly", Description: "automation policy (readonly only)"},
 			{Name: "allow-command", Type: "string[]", Description: "allow only this exact command; repeatable"},
 		},
 		Commands: []commandSpec{
 			{Name: "auth", Description: "authorize the WHOOP account", ReadOnly: true},
 			{Name: "config diagnose", Description: "report credential configuration without secrets", ReadOnly: true},
+			{Name: "version", Description: "report build version metadata", ReadOnly: true},
 			{Name: "profile", Description: "read the basic profile", ReadOnly: true},
 			{Name: "body", Description: "read body measurements", ReadOnly: true},
 			{Name: "cycles", Description: "read cycles", ReadOnly: true},

@@ -1,3 +1,5 @@
 /bin/
 /dist/
 *.credentials.json
+coverage.out
+.DS_Store

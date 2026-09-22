@@ -4,7 +4,7 @@ import (
 	"context"
 	"os"
 
-	"github.com/stephensun/whoop-cli/internal/cli"
+	"github.com/stephenwsun/whoop-cli/internal/cli"
 )
 
 func main() {

@@ -2,6 +2,8 @@
 
 `whoop auth` uses the WHOOP OAuth authorization-code flow. It creates a cryptographically random state value, opens the configured consent URL, binds the localhost callback, verifies the returned state, exchanges the code, and stores the offline refresh token.
 
+Automatic browser launch is available on macOS and Linux only. On Windows and other platforms, plain `whoop auth` exits with an error; run `whoop auth --no-browser`, which prints the authorization URL on stderr and waits for the localhost callback.
+
 WHOOP rotates refresh tokens. Every refresh persists the replacement before an API command continues. If storage fails, the command fails instead of silently continuing with a token that may be invalidated.
 
 ## Storage
