@@ -3,7 +3,7 @@
 ![CI](https://img.shields.io/github/actions/workflow/status/stephenwsun/whoop-cli/ci.yml?branch=main&style=flat-square&label=ci)
 [![Release](https://img.shields.io/github/v/release/stephenwsun/whoop-cli?style=flat-square)](https://github.com/stephenwsun/whoop-cli/releases/latest)
 [![Go](https://img.shields.io/github/go-mod/go-version/stephenwsun/whoop-cli?style=flat-square)](https://go.dev/)
-[![License](https://img.shields.io/github/license/stephenwsun/whoop-cli?style=flat-square)](LICENSE)
+![License](https://img.shields.io/github/license/stephenwsun/whoop-cli?style=flat-square&cacheSeconds=300)
 
 `whoop-cli` is open source under the [MIT license](LICENSE).
 
