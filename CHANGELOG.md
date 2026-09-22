@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 0.1.0 - 2026-09-22
+
 - Add public governance, contribution, security, support, and issue-template guidance.
 - Add build version metadata, `whoop --version`, and automation contract coverage.
 - Add cross-platform install/release documentation and tagged GoReleaser publishing.
