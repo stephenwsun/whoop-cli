@@ -30,7 +30,7 @@ func TestPublicAccountReads(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if profile.UserID == "" {
+	if profile.UserID <= 0 {
 		t.Fatal("WHOOP profile did not include user_id")
 	}
 	if _, err := client.Workouts(ctx, whoop.ListOptions{Limit: 1, Start: time.Now().UTC().Add(-24 * time.Hour).Format(time.RFC3339)}); err != nil {

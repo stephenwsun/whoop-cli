@@ -103,7 +103,7 @@ func (o ListOptions) values(next string) url.Values {
 		v.Set("end", o.End)
 	}
 	if next != "" {
-		v.Set("next_token", next)
+		v.Set("nextToken", next)
 	}
 	return v
 }
@@ -251,7 +251,7 @@ func (c *Client) get(ctx context.Context, path string, query url.Values, out any
 // Profile and resource values are intentionally strings for timestamp fields: the
 // API occasionally returns null and its precision varies between endpoints.
 type Profile struct {
-	UserID    string `json:"user_id"`
+	UserID    int64  `json:"user_id"`
 	FirstName string `json:"first_name"`
 	LastName  string `json:"last_name"`
 	Email     string `json:"email"`
@@ -269,7 +269,7 @@ type Cycle struct {
 	Start  string      `json:"start"`
 	End    string      `json:"end"`
 	Score  *CycleScore `json:"score"`
-	UserID string      `json:"user_id"`
+	UserID int64       `json:"user_id"`
 	Strain float64     `json:"strain"`
 }
 type CycleScore struct {
@@ -281,7 +281,7 @@ type CycleScore struct {
 type Recovery struct {
 	CycleID    int64          `json:"cycle_id"`
 	SleepID    string         `json:"sleep_id"`
-	UserID     string         `json:"user_id"`
+	UserID     int64          `json:"user_id"`
 	CreatedAt  string         `json:"created_at"`
 	Score      *RecoveryScore `json:"score"`
 	ScoreState string         `json:"score_state"`
