@@ -23,7 +23,7 @@ func fixture(t *testing.T, name string) []byte {
 func TestWorkoutsFollowNextTokenFixtures(t *testing.T) {
 	var tokens []string
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		tokens = append(tokens, r.URL.Query().Get("next_token"))
+		tokens = append(tokens, r.URL.Query().Get("nextToken"))
 		w.Header().Set("Content-Type", "application/json")
 		if len(tokens) == 1 {
 			_, _ = w.Write(fixture(t, "workouts-page1.json"))
@@ -70,7 +70,7 @@ func TestTransportRetriesRateLimitAndRedactsError(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if profile.UserID != "user-1" || attempts != 2 || slept != time.Second {
+	if profile.UserID != 1 || attempts != 2 || slept != time.Second {
 		t.Fatalf("retry behavior: profile=%#v attempts=%d slept=%s", profile, attempts, slept)
 	}
 
@@ -103,8 +103,8 @@ func TestWorkoutsPageDoesNotFetchNextPage(t *testing.T) {
 	requests := 0
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		requests++
-		if got := r.URL.Query().Get("next_token"); got != "cursor-1" {
-			t.Errorf("next_token = %q, want cursor-1", got)
+		if got := r.URL.Query().Get("nextToken"); got != "cursor-1" {
+			t.Errorf("nextToken = %q, want cursor-1", got)
 		}
 		_, _ = w.Write(fixture(t, "workouts-page1.json"))
 	}))

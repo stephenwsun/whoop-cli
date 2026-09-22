@@ -44,7 +44,7 @@ func TestResourcePagesDecodeDocumentedFixtures(t *testing.T) {
 	}
 	ctx := context.Background()
 	profile, err := client.Profile(ctx)
-	if err != nil || profile.UserID != "user-1" {
+	if err != nil || profile.UserID != 1 {
 		t.Fatalf("profile = %#v, err = %v", profile, err)
 	}
 	body, err := client.BodyMeasurementsPage(ctx, ListOptions{Limit: 1, Start: "2026-09-19T00:00:00Z", End: "2026-09-22T00:00:00Z"})
