@@ -8,9 +8,9 @@ import (
 	"os"
 	"strings"
 
-	"github.com/stephensun/whoop-cli/internal/auth"
-	"github.com/stephensun/whoop-cli/internal/version"
-	"github.com/stephensun/whoop-cli/whoop"
+	"github.com/stephenwsun/whoop-cli/internal/auth"
+	"github.com/stephenwsun/whoop-cli/internal/version"
+	"github.com/stephenwsun/whoop-cli/whoop"
 )
 
 type Config struct {

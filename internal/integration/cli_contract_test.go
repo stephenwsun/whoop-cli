@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"testing"
 )
@@ -18,7 +19,11 @@ type cliResult struct {
 
 func buildCLI(t *testing.T) string {
 	t.Helper()
-	binary := filepath.Join(t.TempDir(), "whoop")
+	name := "whoop"
+	if runtime.GOOS == "windows" {
+		name += ".exe"
+	}
+	binary := filepath.Join(t.TempDir(), name)
 	cmd := exec.Command("go", "build", "-trimpath", "-o", binary, "../../cmd/whoop")
 	cmd.Env = append(os.Environ(), "CGO_ENABLED=0")
 	if output, err := cmd.CombinedOutput(); err != nil {

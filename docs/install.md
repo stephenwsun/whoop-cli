@@ -21,7 +21,7 @@ curl -fsSLO https://github.com/stephenwsun/whoop-cli/releases/latest/download/ch
 sha256sum --ignore-missing -c checksums.txt
 ```
 
-On macOS, use `shasum -a 256 -c checksums.txt` instead. Put the `whoop` binary
+On macOS, use `shasum -a 256 --ignore-missing -c checksums.txt` instead. Put the `whoop` binary
 on `PATH`, then verify it:
 
 ```sh
@@ -33,7 +33,7 @@ whoop config diagnose --json
 ## Go install
 
 ```sh
-go install github.com/stephensun/whoop-cli/cmd/whoop@latest
+go install github.com/stephenwsun/whoop-cli/cmd/whoop@latest
 ```
 
 Go-installed binaries identify themselves as development builds unless built

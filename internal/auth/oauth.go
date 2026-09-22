@@ -14,6 +14,8 @@ import (
 	"runtime"
 	"strings"
 	"time"
+
+	"github.com/stephenwsun/whoop-cli/internal/version"
 )
 
 const (
@@ -199,7 +201,7 @@ func openBrowser(rawURL string) error {
 	if runtime.GOOS == "linux" {
 		return exec.Command("xdg-open", rawURL).Run()
 	}
-	return errors.New("automatic browser opening is unsupported; open the authorization URL manually")
+	return fmt.Errorf("automatic browser opening is unsupported on %s; rerun `whoop auth --no-browser` and open the printed URL manually", runtime.GOOS)
 }
 
 var secretValuePattern = regexp.MustCompile(`(?i)((?:client[_-]?secret|refresh[_-]?token|access[_-]?token)\s*[=:]\s*)[^\s&,}"]+`)
@@ -218,7 +220,7 @@ func (o *OAuth) tokenRequest(ctx context.Context, form url.Values) (Token, error
 	}
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	req.Header.Set("Accept", "application/json")
-	req.Header.Set("User-Agent", "whoop-cli/1.0")
+	req.Header.Set("User-Agent", version.UserAgent())
 	resp, err := o.cfg.HTTPClient.Do(req)
 	if err != nil {
 		return Token{}, fmt.Errorf("WHOOP OAuth request failed: %w", err)

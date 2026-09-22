@@ -6,7 +6,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/stephensun/whoop-cli/whoop"
+	"github.com/stephenwsun/whoop-cli/whoop"
 )
 
 var TargetSports = map[string]string{"muay-thai": "Muay Thai", "weightlifting": "lift"}

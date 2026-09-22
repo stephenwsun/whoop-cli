@@ -8,8 +8,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/stephensun/whoop-cli/internal/runtime"
-	"github.com/stephensun/whoop-cli/whoop"
+	"github.com/stephenwsun/whoop-cli/internal/runtime"
+	"github.com/stephenwsun/whoop-cli/whoop"
 )
 
 func TestPublicAccountReads(t *testing.T) {

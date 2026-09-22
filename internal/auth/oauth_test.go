@@ -9,6 +9,8 @@ import (
 	"os"
 	"strings"
 	"testing"
+
+	"github.com/stephenwsun/whoop-cli/internal/version"
 )
 
 func TestRefreshRotatesStoredTokenFromFixture(t *testing.T) {
@@ -16,10 +18,11 @@ func TestRefreshRotatesStoredTokenFromFixture(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	var gotRefresh string
+	var gotRefresh, gotUserAgent string
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		_ = r.ParseForm()
 		gotRefresh = r.Form.Get("refresh_token")
+		gotUserAgent = r.Header.Get("User-Agent")
 		w.Header().Set("Content-Type", "application/json")
 		_, _ = w.Write(tokenFixture)
 	}))
@@ -36,8 +39,8 @@ func TestRefreshRotatesStoredTokenFromFixture(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if token.AccessToken != "access-new" || gotRefresh != "refresh-old" {
-		t.Fatalf("unexpected token request: %#v refresh=%q", token, gotRefresh)
+	if token.AccessToken != "access-new" || gotRefresh != "refresh-old" || gotUserAgent != version.UserAgent() {
+		t.Fatalf("unexpected token request: %#v refresh=%q user-agent=%q", token, gotRefresh, gotUserAgent)
 	}
 	stored, err := store.Get(context.Background(), "refresh_token")
 	if err != nil || stored != "refresh-new" {

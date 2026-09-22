@@ -12,7 +12,7 @@
 Download a verified archive from the [latest release](https://github.com/stephenwsun/whoop-cli/releases/latest), install with Go, or build from source:
 
 ```sh
-go install github.com/stephensun/whoop-cli/cmd/whoop@latest
+go install github.com/stephenwsun/whoop-cli/cmd/whoop@latest
 whoop --version
 ```
 

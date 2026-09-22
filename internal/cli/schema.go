@@ -3,7 +3,7 @@ package cli
 import (
 	"os"
 
-	"github.com/stephensun/whoop-cli/internal/output"
+	"github.com/stephenwsun/whoop-cli/internal/output"
 )
 
 type schemaDocument struct {

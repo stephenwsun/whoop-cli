@@ -9,12 +9,12 @@ import (
 	"strings"
 	"time"
 
-	"github.com/stephensun/whoop-cli/internal/auth"
-	"github.com/stephensun/whoop-cli/internal/output"
-	"github.com/stephensun/whoop-cli/internal/runtime"
-	"github.com/stephensun/whoop-cli/internal/summary"
-	"github.com/stephensun/whoop-cli/internal/version"
-	"github.com/stephensun/whoop-cli/whoop"
+	"github.com/stephenwsun/whoop-cli/internal/auth"
+	"github.com/stephenwsun/whoop-cli/internal/output"
+	"github.com/stephenwsun/whoop-cli/internal/runtime"
+	"github.com/stephenwsun/whoop-cli/internal/summary"
+	"github.com/stephenwsun/whoop-cli/internal/version"
+	"github.com/stephenwsun/whoop-cli/whoop"
 )
 
 type options struct {
@@ -67,7 +67,7 @@ func Run(ctx context.Context, args []string) {
 		usage()
 		return
 	}
-	if len(args) > 0 && (args[0] == "--version" || args[0] == "-version") {
+	if len(args) > 0 && args[0] == "--version" {
 		fmt.Fprintln(os.Stdout, version.Current().String())
 		return
 	}
@@ -186,7 +186,7 @@ func runAuth(ctx context.Context, opts options) error {
 	var client *auth.OAuth
 	if opts.noBrowser {
 		client, err = config.OAuthWithBrowser(func(rawURL string) error {
-			fmt.Fprintf(os.Stderr, "whoop: open this URL in a browser to authorize:\n%s\n", rawURL)
+			fmt.Fprintf(os.Stderr, "whoop: open this URL in a browser to authorize:\n%s\nwhoop: waiting for the localhost callback...\n", rawURL)
 			return nil
 		})
 	} else {
@@ -195,9 +195,7 @@ func runAuth(ctx context.Context, opts options) error {
 	if err != nil {
 		return err
 	}
-	if opts.noBrowser {
-		fmt.Fprintln(os.Stderr, "whoop: waiting for the localhost callback...")
-	} else {
+	if !opts.noBrowser {
 		fmt.Fprintln(os.Stderr, "whoop: opening browser for WHOOP consent; approve access there...")
 	}
 	if err := client.Authenticate(ctx); err != nil {
@@ -246,7 +244,7 @@ func runProfile(ctx context.Context, opts options) error {
 	if err != nil {
 		return err
 	}
-	return emit(opts, profile, "profile")
+	return emit(opts, profile)
 }
 func runList(ctx context.Context, name string, opts options) error {
 	api, err := newAPI(ctx)
@@ -269,24 +267,13 @@ func runList(ctx context.Context, name string, opts options) error {
 	if err != nil {
 		return err
 	}
-	switch opts.mode {
-	case output.JSON:
-		return output.JSONValue(os.Stdout, value)
-	case output.Plain:
-		return output.PlainValue(os.Stdout, value)
-	default:
-		return output.PlainValue(os.Stdout, value)
-	}
+	return emit(opts, value)
 }
-func emit(opts options, value any, name string) error {
-	switch opts.mode {
-	case output.JSON:
+func emit(opts options, value any) error {
+	if opts.mode == output.JSON {
 		return output.JSONValue(os.Stdout, value)
-	case output.Plain:
-		return output.PlainValue(os.Stdout, value)
-	default:
-		return output.PlainValue(os.Stdout, value)
 	}
+	return output.PlainValue(os.Stdout, value)
 }
 
 func weekWindow(opts options) whoop.ListOptions {
