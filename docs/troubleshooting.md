@@ -15,7 +15,7 @@ If a credential file is malformed, restore it from a protected backup or remove 
 - The registered redirect URI must exactly match `http://localhost:8400/callback`, including scheme, port, and path.
 - Port 8400 must be free before `whoop auth` starts. Stop the process using it, then retry.
 - A callback with a missing or changed state is rejected as a CSRF failure; restart authorization rather than bypassing the check.
-- If the browser does not open, copy the authorization URL only from the terminal and open it manually. Do not share it publicly.
+- If the browser does not open, or the platform does not support automatic browser launch, rerun `whoop auth --no-browser`, copy the printed authorization URL only from the terminal, and open it manually. Do not share it publicly.
 - OAuth client credentials must belong to the WHOOP developer application whose redirect URI is registered.
 
 ## Refresh-token rotation
