@@ -12,4 +12,5 @@
 
 - [ ] CLI schema, output, exit codes, and docs updated if changed
 - [ ] No tokens, client secrets, or private WHOOP data appear in the diff
+- [ ] Branch and authored commit subjects follow `CONTRIBUTING.md` naming conventions
 - [ ] Changelog updated for user-visible behavior
