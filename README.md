@@ -66,7 +66,9 @@ Detailed operational guides:
 
 The public API exposes account data and scored activities, not direct device control. This project intentionally has no write commands. Availability, score state, timestamp precision, and sport naming follow the official API. A missing or pending score is represented as a null score; it is not synthesized. Pagination and rate limits are handled by the client, but callers must still respect WHOOP quotas.
 
-References: [WHOOP Developer Portal](https://developer.whoop.com/), [WHOOP API documentation](https://developer.whoop.com/api/), [OAuth 2.0](https://developer.whoop.com/docs/developing/oauth/).
+The [WHOOP API Terms of Use](https://developer.whoop.com/api-terms-of-use/) restrict creating permanent copies of WHOOP Data and keeping cached copies longer than permitted by the cache header. This CLI reads API records for command output and does not persist API records or add an application cache by default; credential storage is separate.
+
+References: [WHOOP Developer Portal](https://developer.whoop.com/), [WHOOP API documentation](https://developer.whoop.com/api/), [WHOOP API Terms of Use](https://developer.whoop.com/api-terms-of-use/), [OAuth 2.0](https://developer.whoop.com/docs/developing/oauth/).
 
 ## Athena integration contract
 
